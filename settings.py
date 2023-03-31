@@ -1,7 +1,6 @@
 import os
 import openai
 
-# openai.api_key = "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"
 model = 'gpt-3.5-turbo' # or text-davinci-003
 SESSION_SECRET_KEY = os.environ.get('SESSION_SECRET_KEY')
 
