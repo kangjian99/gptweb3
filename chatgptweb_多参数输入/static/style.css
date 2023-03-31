@@ -1,0 +1,247 @@
+/* Reset default styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  color: #333;
+  background-color: #eee;
+  display: block;
+  padding-bottom: 50px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+p {
+  font-size: 16px;
+  margin-bottom: 0.1em;
+}
+
+h1 {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+li:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
+code {
+  background-color: #ffffff;
+  color: #007abb;
+}
+
+main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+textarea {
+  width: 100%;
+  resize: none;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.card-header {
+  background-color: #0d6ffe;  /* #1E90CC */
+  color: #FFFFFF;
+  font-size: 18px;
+  /* font-weight: bold; */
+}
+
+.range-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-body table {
+  width: 90%;
+  margin: 0 auto; /* 使用 margin 属性将表格居中显示 */
+  font-size: 14px;
+  margin-bottom: 1rem;
+  background-color: transparent;
+  border-collapse: collapse;
+  border-radius: 5px; /* 添加圆角 */
+  overflow: hidden; /* 避免边框过大时出现内容溢出 */
+}
+
+.card-body th,
+.card-body td {
+  padding: 0.25rem;
+  padding-left: 0.5rem;
+  vertical-align: top;
+  border: 1px solid #c8ced3; /* 修改为左右和底部都有边框 */
+}
+
+.card-body th {
+  vertical-align: middle;
+  border-bottom: 1px solid #c8ced3;
+  background-color: #e5e5e5; /* 添加表头背景色 */
+}
+
+.card-body tbody + tbody {
+  border-top: 2px solid #c8ced3;
+}
+
+input[type='range'] {
+  width: 60%;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 0.5rem;
+  color: transparent;
+  cursor: pointer;
+  background-color:  #ced4da;
+  border-color: transparent;
+  border-radius: 1rem;
+}
+
+input[type=text] {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+output {
+  width: 3rem;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+button {
+  border: none;
+  background-color: #ccc;
+  color: #000;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+button[type='submit'] {
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+button[type='submit']:hover {
+  background-color: #0069d9;
+}
+
+.custom-file-input {
+  font-size: 14px;
+}
+
+.loading {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.result-container {
+  margin-top: 2rem;
+}
+
+.result {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+#dropdown {
+font-size: 14px;
+}
+
+.hide {
+  display: none;
+}
+
+#copy-animation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.message {
+  padding: 10px;
+  background-color: #ccc;
+  border: 1px solid #ddd;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  animation: fade-in-out 3s ease-in-out;
+}
+
+@keyframes fade-in-out {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+

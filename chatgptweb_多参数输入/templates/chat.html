@@ -1,0 +1,264 @@
+
+<html lang="en">
+
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<head>
+    <meta charset="UTF-8">
+    <title>ChatGPT Web</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/js/jquery-3.6.4.js"></script>
+</head>
+
+<body>
+
+<div class="info">
+    <br>
+    <h1 align="center">Model: {{ model }}</h1>
+    <div align="right"  style="margin-right: 25px;">
+<!--            <h2>Temperature Guide</h2>
+            Code Refactoring --- 0.2<br>
+            Email Parser --- 0.3<br>
+            Chat Bot --- 0.5<br>
+            Summarise Text --- 0.5<br>
+            Code Generation --- 0.8<br>
+            Story Writing ---0.8<br>
+-->
+User: {{ user_id}}<br>
+    </div>
+    </div>
+        <hr />
+        
+        <div class="container">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-md-8">
+            <div class="card" style="margin-top: 10px;">
+                <div class="card-header text-center">文本生成器  模型-{{ model }}</div>
+                <div class="card-body">
+                    {% if message %} {{ message }} {% endif %}
+                    <form method="post" id="question-form" onsubmit="submit.disabled=true" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="background">背景信息：</label>
+                            <textarea id="background" name="background" placeholder="" rows="4" class="form-control"></textarea>
+                        </div>
+                            <div class="form-group">
+                            <label for="question">提示语句或关键词（多个关键词以空格分开）：</label>
+                            <textarea id="question" name="question" placeholder="Type your keywords here." rows="1" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="words">字数 (input only once):</label>
+                            <textarea id="words" name="words" placeholder="How many words do you want to generate" rows="1" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="template_file">Upload Prompt Template (.txt, upload only once):</label>
+                            <div class="input-group mb-3">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="template_file" name="template_file" accept=".txt">
+                                </div>
+                                <div class="input-group-append align-items-center">
+                                    <label class="input-group-text  align-self-center" for="dropdown" style="margin-right: 10px;">或选择输出模板</label>
+                                </div>
+                                <select id="dropdown" name="dropdown" data-pid="{{ pid }}" class="form-control-sm  align-self-center">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group mx-5" align="center">
+                            <label for="temperature">Temperature:</label>
+                            <div class="range-container" style="margin-left: 40px;">
+                                <input type="range" class="form-range" name="temperature" id="tem" min=0 max=1 step=0.1 value=0.5 oninput="document.getElementById('num').value = this.value" title="Temperature slider" class="custom-range">
+                                <input type="text" id="num" placeholder="0.5" style="border: none;background: none; width: 50px;" disabled class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group" align="center">
+                            <button id="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                        <input type="hidden" name="logged_in" value="{{ session.get('logged_in') }}">
+                    </form>
+                    
+                    <div id="loading" style="display:none; color:gray;"><b>Waiting for the response...</b></div>
+                    
+                     <div id="empty" style="display:none; color:black;">Question can't be empty!</div>
+                    
+<div id="response-card" style="display: none;">                    
+<div class="card">
+    <div class="card-body align-items-center">
+        <div style="text-align: left"><b>用户文本：</b>
+            <pre id="legend" style="white-space: pre-wrap;">{{ question }}</pre>
+        </div>
+        <hr />
+        <div style="text-align: left"><b>{{ model }}</b>
+        <div id="user_tem"><b>回复 - Tem={{ temperature }} :</b>
+</div>
+            <div class="card" style="height: 400px; overflow-y: scroll;">
+                <div class="card-body" style="text-align:left; margin-top: 0px; white-space: pre-wrap;" id="res">{{ res|safe }}</div>
+            </div>
+                 
+            <div id="copy-animation" class="hide">
+                <div class="message">已复制到剪贴板！</div>
+            </div>
+            <button onclick="copyToClipboard()" class="btn btn-success" style="float:right; margin-top: 1px; transform: scale(0.8);">复制结果</button>
+            <br><br>
+            <form id="clear-form" method="post">
+                <div class="form-group" style="text-align: center;">
+                    <button name="clear" value="1" class="btn btn-primary" style="transform: scale(0.8);">Clear</button>
+                </div>
+                <input type="hidden" name="logged_in" value="{{ session.get('logged_in') }}">
+            </form>
+
+        </div>
+</div>
+                <form action="{{ url_for('logout') }}" method="get" style="float: right; transform: scale(0.8);">
+  <button class="btn btn-secondary">Logout</button>
+</form>
+    </div>
+</div>
+   
+    <script>
+function resetPage() {
+    // 清空 question 文本区域
+    document.getElementById("question").value = "";
+    document.getElementById("backround").value = "";
+    // 清空 words 文本区域
+    document.getElementById("words").value = "";
+}
+
+function empty_process() {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("empty").style.display = "block";
+    setTimeout(function() {
+          document.getElementById("empty").style.display = "none";
+    }, 3000);
+}
+
+function clear_process() {
+    let scrollPosition = 0;
+    window.scroll({
+        top: scrollPosition,
+        behavior: 'smooth'
+    });
+    document.getElementById("legend").innerHTML = "";
+    document.getElementById("user_tem").innerHTML = "";
+    document.getElementById("res").innerHTML = "";
+    enable_submit();
+}
+
+function enable_submit() {
+    // 启用提交按钮
+    document.getElementById("submit").disabled = false;
+}
+
+function onSuccess() {
+    document.getElementById("loading").style.display = "none";
+    // 所有元素显示完成，滚动到底部
+    let element = document.getElementById('submit');
+    // let scrollPosition = document.body.scrollHeight - 200;
+    let scrollPosition = element.offsetTop + 120;
+    window.scroll({
+        top: scrollPosition,
+        behavior: 'smooth'  // or auto
+    });
+    resetPage();
+}
+
+// 在全局范围内定义 source 变量
+let source;
+
+document.getElementById("question-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+    var question = document.getElementById("question").value;
+    var background_info = document.getElementById("background").value;
+    var temperature = document.getElementById("tem").value;
+    var words = document.getElementById("words").value;
+    var dropdown = document.getElementById("dropdown").value;
+    var template_file = document.getElementById("template_file").files[0];
+
+    var formData = new FormData();
+    formData.append("background", background_info);
+    formData.append("question", question);
+    formData.append("temperature", temperature);
+    formData.append("words", words);
+    formData.append("dropdown", dropdown);
+    formData.append("template_file", template_file);
+    
+    function checkHeightAndScroll(element, maxHeight) {
+        const parentElement = element.parentNode;
+        if (element.scrollHeight > maxHeight) {
+            parentElement.scrollTop = element.scrollHeight - parentElement.clientHeight;
+        }
+    }
+    function createEventSource(responseUrl, question, temperature) {
+        source = new EventSource(responseUrl);
+        var onSuccessCalled = false; // 添加这个布尔变量
+        source.onmessage = function(event) {
+            document.getElementById("legend").innerText = question;
+            document.getElementById("user_tem").innerHTML = "Tem= " + temperature;
+            // console.log("Received data:", event.data);
+            const data = JSON.parse(event.data);  //先对event.data解析JSON
+            const html = data.data;
+            const resElement = document.getElementById("res");
+            resElement.innerHTML = ""; // 首先清空容器
+            resElement.insertAdjacentHTML("beforeend", html);
+            document.getElementById("response-card").style.display = "block";
+            // 在处理完消息后调用 onSuccess一次
+            if (!onSuccessCalled) {
+                onSuccess();
+                onSuccessCalled = true;
+            }
+           // 检查 "res" 元素的高度并滚动
+           checkHeightAndScroll(resElement, 400);
+        };
+        source.onerror = function(error) {
+            if (error.target.readyState === EventSource.CLOSED) {
+                console.log("EventSource closed");
+            } else if (error.target.readyState === EventSource.CONNECTING) {
+                console.log("EventSource reconnecting");
+                enable_submit();
+            }
+        };
+    }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/stream", true); 
+    xhr.onreadystatechange = function() {
+        if (question == "") {
+            enable_submit();
+            empty_process();
+            } else {
+                document.getElementById("loading").style.display = "block";
+              }
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            var responseUrl = xhr.responseText;
+            createEventSource(responseUrl, question, temperature);
+        }
+    };
+    xhr.send(formData);
+});
+
+// Clear操作
+document.getElementById("clear-form").addEventListener("submit", function(event) {
+  event.preventDefault();
+  // 终止 EventSource 连接
+  if (source) {
+    source.close();
+  }
+  
+  // 使用 FormData 发送表单数据
+  var formData = new FormData();
+  formData.append("clear", "true");
+  formData.append("logged_in", "{{ session.get('logged_in') }}");
+
+  // 向服务器发送异步请求，以清除服务器上的数据
+  fetch("/", {
+    method: "POST",
+    body: formData
+  });
+  //重置页面
+  clear_process()
+});
+
+    </script>
+   
+<script src="/static/script.js"></script>
+</body>
+</html>
