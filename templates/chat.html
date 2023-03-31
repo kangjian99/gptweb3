@@ -46,30 +46,41 @@ User: {{ user_id}}<br>
                             <label for="background">背景信息：</label>
                             <textarea id="background" name="background" placeholder="" rows="4" class="form-control"></textarea>
                         </div>
-                       <div class="form-group">
-                            <label for="words">字数 (input only once):</label>
-                            <textarea id="words" name="words" placeholder="How many words do you want to generate" rows="1" class="form-control"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="template_file">Upload Prompt Template (.txt, upload only once):</label>
-                            <div class="input-group mb-3">
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="template_file" name="template_file" accept=".txt">
-                                </div>
-                                <div class="input-group-append align-items-center">
-                                    <label class="input-group-text  align-self-center" for="dropdown" style="margin-right: 10px;">或选择输出模板</label>
-                                </div>
-                                <select id="dropdown" name="dropdown" data-pid="{{ pid }}" class="form-control-sm  align-self-center">
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group mx-5" align="center">
-                            <label for="temperature">Temperature:</label>
-                            <div class="range-container" style="margin-left: 40px;">
-                                <input type="range" class="form-range" name="temperature" id="tem" min=0 max=1 step=0.1 value=0.5 oninput="document.getElementById('num').value = this.value" title="Temperature slider" class="custom-range">
-                                <input type="text" id="num" placeholder="0.5" style="border: none;background: none; width: 50px;" disabled class="form-control">
-                            </div>
-                        </div>
+                        
+<div class="form-group">
+  <div class="row">
+    <div class="col-5">
+      <label for="words">字数:</label>
+      <textarea id="words" name="words" placeholder="How many words to generate" rows="1" class="form-control"></textarea>
+    </div>
+    <div class="col-7">
+      <label for="temperature">Temperature:</label>
+      <div class="range-container">
+        <input type="range" class="form-range" name="temperature" id="tem" min=0 max=1 step=0.1 value=0.5 oninput="document.getElementById('num').value = this.value" title="Temperature slider" class="custom-range">
+        <input type="text" id="num" placeholder="0.5" style="border: none;background: none; width: 50px;" disabled class="form-control">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="form-group">
+  <div class="row">
+    <div class="col-md-5">
+      <label for="template_file">Upload Prompt Template (.txt):</label>
+      <div class="input-group mb-3">
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="template_file" name="template_file" accept=".txt">
+        </div>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <label for="template_file">或选择输出模板:</label>
+      <select id="dropdown" name="dropdown" data-pid="{{ pid }}" class="form-control-sm align-self-center" style="width: 80%;">
+      </select>
+    </div>
+  </div>
+</div>
+
                         <div class="form-group" align="center">
                             <button id="submit" class="btn btn-primary">Submit</button>
                         </div>
