@@ -1,5 +1,0 @@
-flask
-Openai
-Markdown
-datetime
-Pyodbc
