@@ -38,15 +38,15 @@ User: {{ user_id}}<br>
                 <div class="card-body">
                     {% if message %} {{ message }} {% endif %}
                     <form method="post" id="question-form" onsubmit="submit.disabled=true" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label for="background">背景信息：</label>
-                            <textarea id="background" name="background" placeholder="" rows="4" class="form-control"></textarea>
-                        </div>
                             <div class="form-group">
                             <label for="question">提示语句或关键词（多个关键词以空格分开）：</label>
                             <textarea id="question" name="question" placeholder="Type your keywords here." rows="1" class="form-control"></textarea>
                         </div>
-                        <div class="form-group">
+                         <div class="form-group">
+                            <label for="background">背景信息：</label>
+                            <textarea id="background" name="background" placeholder="" rows="4" class="form-control"></textarea>
+                        </div>
+                       <div class="form-group">
                             <label for="words">字数 (input only once):</label>
                             <textarea id="words" name="words" placeholder="How many words do you want to generate" rows="1" class="form-control"></textarea>
                         </div>
