@@ -43,8 +43,8 @@ User: {{ user_id}}<br>
                             <textarea id="question" name="question" placeholder="Type your keywords here." rows="1" class="form-control"></textarea>
                         </div>
                          <div class="form-group">
-                            <label for="background">背景信息：</label>
-                            <textarea id="background" name="background" placeholder="" rows="4" class="form-control"></textarea>
+                            <label for="context">背景信息：</label>
+                            <textarea id="context" name="context" placeholder="" rows="4" class="form-control"></textarea>
                         </div>
                         
 <div class="form-group">
@@ -129,7 +129,7 @@ User: {{ user_id}}<br>
 function resetPage() {
     // 清空 question 文本区域
     document.getElementById("question").value = "";
-    document.getElementById("background").value = "";
+    document.getElementById("context").value = "";
     // 清空 words 文本区域
     document.getElementById("words").value = "";
 }
@@ -178,15 +178,15 @@ let source;
 document.getElementById("question-form").addEventListener("submit", function(event) {
     event.preventDefault();
     var question = document.getElementById("question").value;
-    var background_info = document.getElementById("background").value;
+    var context = document.getElementById("context").value;
     var temperature = document.getElementById("tem").value;
     var words = document.getElementById("words").value;
     var dropdown = document.getElementById("dropdown").value;
     var template_file = document.getElementById("template_file").files[0];
 
     var formData = new FormData();
-    formData.append("background", background_info);
     formData.append("question", question);
+    formData.append("context", context);
     formData.append("temperature", temperature);
     formData.append("words", words);
     formData.append("dropdown", dropdown);
