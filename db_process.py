@@ -1,5 +1,6 @@
 import pyodbc
 import json
+import tiktoken
 from settings import *
     
 def authenticate_user(username, password):
@@ -72,3 +73,8 @@ def history_messages(user_id):
     if user_id == 'sonic':
         rows = 4
     return rows
+
+def num_tokens(string: str) -> int:
+    encoding = tiktoken.encoding_for_model(model)
+    num_tokens = len(encoding.encode(string))
+    return num_tokens

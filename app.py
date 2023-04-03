@@ -87,7 +87,7 @@ def send_gpt(prompt, tem, messages, user_id):
 #        print(f"{response['usage']}\n")
 #        session['tokens'] = response['usage']['total_tokens']
         
-def count_chars(text, user_id, tokens, messages):
+def count_chars(text, user_id, messages):
     cn_pattern = re.compile(r'[\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef]') #匹配中文字符及标点符号
     cn_chars = cn_pattern.findall(text)
 
@@ -98,7 +98,8 @@ def count_chars(text, user_id, tokens, messages):
     en_char_count = len(en_chars)
 
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
+    
+    tokens = num_tokens(text)
     # 将当前统计结果添加为字典
     stats = {'user_id': user_id, 'datetime': now, 'cn_char_count': cn_char_count, 'en_char_count': en_char_count, 'tokens': tokens}
     print(stats)
@@ -185,7 +186,7 @@ def stream():
     messages = session['messages']
     # tokens = session.get('tokens')
     def process_data():
-        token_counter = 0
+        # token_counter = 0
         res = None
         nonlocal messages
         try:
@@ -193,19 +194,19 @@ def stream():
                 if 'content' in res:
                     markdown_message = generate_markdown_message(res['content'])
                     # print(f"Yielding markdown_message: {markdown_message}")  # 添加这一行
-                    token_counter += 1
+                    # token_counter += 1
                     yield f"data: {json.dumps({'data': markdown_message})}\n\n" # 将数据序列化为JSON字符串
         finally:
             # 如果生成器停止，仍然会执行
-            text = res['content']
-            messages.append({"role": "assistant", "content": text})
+            messages.append({"role": "assistant", "content": res['content']})
+            join_message = "".join([msg["content"] for msg in messages])
             print("精简前messages:", messages)
             rows = history_messages(user_id) # 历史记录条数
             if len(messages) > rows:
                 messages = messages[-rows:] #仅保留最新两条
             save_user_messages(user_id, messages)
             # session['messages'] = messages
-            count_chars(text, user_id, token_counter, messages)
+            count_chars(join_message, user_id, messages)
             
     if stream_data:
         stream_data.pop(list(stream_data.keys())[0])  # 删除已使用的URL及相关信息              
@@ -217,4 +218,7 @@ def stream():
     
     print(session)    
     session['tokens'] = 0
-    return 'stream_get/' + unique_url
+    return 'stream_get/' + unique_url                
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5858)
