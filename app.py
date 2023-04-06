@@ -201,10 +201,10 @@ def stream():
             messages.append({"role": "assistant", "content": res['content']})
             join_message = "".join([msg["content"] for msg in messages])
             print("精简前messages:", messages)
-            rows = history_messages(user_id) # 历史记录条数
-            if len(messages) > rows:
-                messages = messages[-rows:] #仅保留最新两条
-            save_user_messages(user_id, messages)
+            # rows = history_messages(user_id) # 历史记录条数
+            # if len(messages) > rows:
+            #     messages = messages[-rows:] #仅保留最新两条
+            save_user_messages(user_id, []) # messages
             # session['messages'] = messages
             count_chars(join_message, user_id, messages)
             
