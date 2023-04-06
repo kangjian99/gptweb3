@@ -207,7 +207,7 @@ def stream():
             save_user_messages(user_id, []) # messages
             # session['messages'] = messages
             count_chars(join_message, user_id, messages)
-            
+
     if stream_data:
         stream_data.pop(list(stream_data.keys())[0])  # 删除已使用的URL及相关信息              
     unique_url = uuid.uuid4().hex
