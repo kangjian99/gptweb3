@@ -219,6 +219,3 @@ def stream():
     print(session)    
     session['tokens'] = 0
     return 'stream_get/' + unique_url                
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5858)
