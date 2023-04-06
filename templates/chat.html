@@ -42,10 +42,34 @@ User: {{ user_id}}<br>
                             <label for="question">提示语句或关键词（多个关键词以空格分开）：</label>
                             <textarea id="question" name="question" placeholder="Type your keywords here." rows="1" class="form-control"></textarea>
                         </div>
-                         <div class="form-group">
-                            <label for="context">背景信息：</label>
-                            <textarea id="context" name="context" placeholder="" rows="4" class="form-control"></textarea>
-                        </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="context">背景信息：</label>
+                <textarea id="context" name="context" placeholder="" rows="4" class="form-control"></textarea>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="add-info1">附加信息1：</label>
+                <textarea id="add-info1" name="add-info1" placeholder="" rows="4" class="form-control"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="add-info2">附加信息2：</label>
+                <textarea id="add-info2" name="add-info2" placeholder="" rows="4" class="form-control"></textarea>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="add-info3">附加信息3：</label>
+                <textarea id="add-info3" name="add-info3" placeholder="" rows="4" class="form-control"></textarea>
+            </div>
+        </div>
+    </div>
                         
 <div class="form-group">
   <div class="row">
@@ -130,6 +154,9 @@ function resetPage() {
     // 清空 question 文本区域
     document.getElementById("question").value = "";
     document.getElementById("context").value = "";
+    document.getElementById("add-info1").value = "";
+    document.getElementById("add-info2").value = "";
+    document.getElementById("add-info3").value = "";
     // 清空 words 文本区域
     document.getElementById("words").value = "";
 }
@@ -179,14 +206,19 @@ document.getElementById("question-form").addEventListener("submit", function(eve
     event.preventDefault();
     var question = document.getElementById("question").value;
     var context = document.getElementById("context").value;
+    var add_info1 = document.getElementById("add-info1").value;
+    var add_info2 = document.getElementById("add-info2").value;
+    var add_info3 = document.getElementById("add-info3").value;
     var temperature = document.getElementById("tem").value;
     var words = document.getElementById("words").value;
     var dropdown = document.getElementById("dropdown").value;
     var template_file = document.getElementById("template_file").files[0];
-
+    
+    var mergedContext = context + "\n" + add_info1 + "\n" + add_info2 + "\n" + add_info3;
+    
     var formData = new FormData();
     formData.append("question", question);
-    formData.append("context", context);
+    formData.append("context", mergedContext);
     formData.append("temperature", temperature);
     formData.append("words", words);
     formData.append("dropdown", dropdown);
