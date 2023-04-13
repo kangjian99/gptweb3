@@ -10,6 +10,7 @@ db_username = os.environ.get('DB_USERNAME')
 db_password = os.environ.get('DB_PASSWORD')
 driver = '{ODBC Driver 18 for SQL Server}'
 
+openai.api_key = os.environ.get('OPENAI_API_KEY')
 openai_api_key = os.environ.get('OPENAI_API_KEY')
 API_URL = "https://api.openai.com/v1/chat/completions"
 
