@@ -7,6 +7,7 @@ from datetime import datetime
 from settings import *
 from db_process import *
 from md_process import *
+from wx_process import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SESSION_SECRET_KEY # SECRET_KEY是Flask用于对session数据进行加密和签名的一个关键值。如果没有设置将无法使用session
@@ -178,7 +179,11 @@ def stream():
             prompt_template = list(prompts.values())[int(dropdown) - 1]
         else:
             prompt_template = template_file.read().decode('utf-8')
-        question = f"{prompt_template.format(keyword=keyword, words=words, context=context)!s}"
+           if 'url' in prompt_template:
+            text = get_wx_content(keyword)
+            question = f"{prompt_template.format(url=text)!s}"
+        else:
+            question = f"{prompt_template.format(keyword=keyword, words=words, context=context)!s}"
     else:
         question = keyword
 
