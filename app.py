@@ -180,7 +180,7 @@ def stream():
         else:
             prompt_template = template_file.read().decode('utf-8')
         if 'url' in prompt_template:
-            text = get_wx_content(keyword)
+            text = get_content(keyword)
             question = f"{prompt_template.format(url=text)!s}"
         else:
             question = f"{prompt_template.format(keyword=keyword, words=words, context=context)!s}"
@@ -224,6 +224,3 @@ def stream():
     print(session)    
     session['tokens'] = 0
     return 'stream_get/' + unique_url                
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5858)
