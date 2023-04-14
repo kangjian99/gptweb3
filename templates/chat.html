@@ -42,31 +42,18 @@ User: {{ user_id}}<br>
                             <label for="question">提示语句、文章链接或关键词（多个关键词以空格分开）：</label>
                             <textarea id="question" name="question" placeholder="Type your keywords here." rows="3" class="form-control"></textarea>
                         </div>
+                        
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
                 <label for="context">背景信息：</label>
-                <textarea id="context" name="context" placeholder="" rows="3" class="form-control"></textarea>
+                <textarea id="context" name="context" placeholder="" rows="4" class="form-control"></textarea>
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="add-info1">附加信息1：</label>
-                <textarea id="add-info1" name="add-info1" placeholder="" rows="3" class="form-control"></textarea>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="add-info2">附加信息2：</label>
-                <textarea id="add-info2" name="add-info2" placeholder="" rows="3" class="form-control"></textarea>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="add-info3">附加信息3：</label>
-                <textarea id="add-info3" name="add-info3" placeholder="" rows="3" class="form-control"></textarea>
+                <textarea id="add-info1" name="add-info1" placeholder="" rows="4" class="form-control"></textarea>
             </div>
         </div>
     </div>
@@ -155,8 +142,8 @@ function resetPage() {
     document.getElementById("question").value = "";
     document.getElementById("context").value = "";
     document.getElementById("add-info1").value = "";
-    document.getElementById("add-info2").value = "";
-    document.getElementById("add-info3").value = "";
+    // document.getElementById("add-info2").value = "";
+    // document.getElementById("add-info3").value = "";
     // 清空 words 文本区域
     document.getElementById("words").value = "";
 }
@@ -207,14 +194,14 @@ document.getElementById("question-form").addEventListener("submit", function(eve
     var question = document.getElementById("question").value;
     var context = document.getElementById("context").value;
     var add_info1 = document.getElementById("add-info1").value;
-    var add_info2 = document.getElementById("add-info2").value;
-    var add_info3 = document.getElementById("add-info3").value;
+    // var add_info2 = document.getElementById("add-info2").value;
+    // var add_info3 = document.getElementById("add-info3").value;
     var temperature = document.getElementById("tem").value;
     var words = document.getElementById("words").value;
     var dropdown = document.getElementById("dropdown").value;
     var template_file = document.getElementById("template_file").files[0];
     
-    var mergedContext = context + "\n" + add_info1 + "\n" + add_info2 + "\n" + add_info3;
+    var mergedContext = context + "\n" + add_info1// + "\n" + add_info2 + "\n" + add_info3;
     
     var formData = new FormData();
     formData.append("question", question);
@@ -261,21 +248,26 @@ document.getElementById("question-form").addEventListener("submit", function(eve
         };
     }
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/stream", true); 
-    xhr.onreadystatechange = function() {
-        if (question == "") {
-            enable_submit();
-            empty_process();
-            } else {
-                document.getElementById("loading").style.display = "block";
-              }
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            var responseUrl = xhr.responseText;
-            createEventSource(responseUrl, question, temperature);
-        }
-    };
-    xhr.send(formData);
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", "/stream", true);
+	xhr.onload = function() {
+		if (xhr.status === 200) {
+			var responseUrl = xhr.responseText;
+			createEventSource(responseUrl, question, temperature);
+		} else {
+			console.error("请求失败，状态码：", xhr.status);
+		}
+	};
+	xhr.onerror = function() {
+		console.error("请求错误：", xhr.statusText);
+	};
+	if (question === "") {
+		enable_submit();
+		empty_process();
+	} else {
+		document.getElementById("loading").style.display = "block";
+		xhr.send(formData);
+	}
 });
 
 // Clear操作
