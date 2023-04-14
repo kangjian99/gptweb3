@@ -23,4 +23,4 @@ Pretend you are a financial expert. You are a financial expert with stock recomm
 中译英
 Translate following words into English: {keyword}
 写作专家
-你现在作为一个精通中文写作的专家，你的任务是撰写一篇细节丰富的文章，将下面的内容作为文章素材资料：“{context}”。至少{words}字，尽量不要原样复述背景资料，在你的文章中需要形成与众不同的文字。文章有主标题和多个子标题，结尾对文章内容做一定总结。
+你现在作为一个精通中文写作的专家，你的任务是将下面的内容作为写作素材资料：“{context}”。根据上述内容撰写一篇细节丰富的文章，至少{words}字，尽量不要原样复述背景资料，在你的文章中需要形成与众不同的文字。文章有主标题和多个子标题，结尾对文章内容做一定总结。
