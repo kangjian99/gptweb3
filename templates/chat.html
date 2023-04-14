@@ -248,26 +248,32 @@ document.getElementById("question-form").addEventListener("submit", function(eve
         };
     }
 
-	var xhr = new XMLHttpRequest();
-	xhr.open("POST", "/stream", true);
-	xhr.onload = function() {
-		if (xhr.status === 200) {
-			var responseUrl = xhr.responseText;
-			createEventSource(responseUrl, question, temperature);
-		} else {
-			console.error("请求失败，状态码：", xhr.status);
-		}
-	};
-	xhr.onerror = function() {
-		console.error("请求错误：", xhr.statusText);
-	};
 	if (question === "") {
 		enable_submit();
 		empty_process();
 	} else {
 		document.getElementById("loading").style.display = "block";
-		xhr.send(formData);
+		fetch("/stream", {
+			method: "POST",
+			body: formData,
+		})
+		.then((response) => {
+			if (response.ok) {
+				return response.text();
+			} else {
+				throw new Error(`请求失败，状态码：${response.status}`);
+			}
+		})
+		.then((responseUrl) => {
+			createEventSource(responseUrl, question, temperature);
+			document.getElementById("loading").style.display = "none";
+		})
+		.catch((error) => {
+			console.error("请求错误：", error.message);
+			document.getElementById("loading").style.display = "none";
+		});
 	}
+
 });
 
 // Clear操作
