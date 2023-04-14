@@ -218,7 +218,12 @@ def stream():
                         #     messages = messages[-rows:] #仅保留最新两条
                         # session['messages'] = messages
                         count_chars(join_message, user_id, messages)
-                        extract_text += f'【文章{count}：】\n' + response["choices"][0]['message']['content'] + '\n'
+                        content = response["choices"][0]['message']['content']
+                        title_keyword = "标题"
+                        if title_keyword in content:
+                            title_index = content.index(title_keyword)
+                            content = content[title_index:] # 去除开头干扰性语句
+                        extract_text += f'【文章{count}：】\n' + content + '\n'
                         count += 1
                 prompt_template = list(prompts.values())[-1]
                 question = f"{prompt_template.format(words=words, context=extract_text)!s}"
@@ -263,6 +268,3 @@ def stream():
     print(session)    
     session['tokens'] = 0
     return 'stream_get/' + unique_url                
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5858)
