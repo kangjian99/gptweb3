@@ -201,7 +201,7 @@ document.getElementById("question-form").addEventListener("submit", function(eve
     var dropdown = document.getElementById("dropdown").value;
     var template_file = document.getElementById("template_file").files[0];
     
-    var mergedContext = context + "\n" + add_info1// + "\n" + add_info2 + "\n" + add_info3;
+    var mergedContext = context + "\n" + add_info1;// + "\n" + add_info2 + "\n" + add_info3;
     
     var formData = new FormData();
     formData.append("question", question);
