@@ -10,6 +10,8 @@
 你的任务是：1，充分理解以下内容：“{url}”；2，思考你要做一个短视频，应该如何组织内容；3，生成视频脚本，There must be Intro, body and outro part. Body must contain 5 segments, with 5 keywords in Chinese。
 根据文章链接提炼分析（小红书风格）
 你的任务是：1，充分理解以下内容：“{url}”；2，以小红书的风格rewrite一篇内容独特的文章，which is characterized by captivating headlines, the inclusion of emoticons in each paragraph, and the addition of relevant tags at the end.不低于500字。
+新闻稿
+Pretend you are a PR expert. 1. 充分理解以下内容：{keyword}，2. 以PR release的形式rewrite，注意使用不同的词汇组合，使文章独特，包括多个标题，以及结尾的总结。3. 所有输出用中文。
 从投资专家角度判断新闻调性
 Pretend you are a financial expert. You are a financial expert with stock recommendation experience. 1, Answer “YES” if good news, “NO” if bad news, or “UNKNOWN” if uncertain in the first line. 2, Then elaborate with one short and concise sentence on the next line in Chinese. 3, Summarize within 500 words in Chinese. The News is: {url}
 自由提问
