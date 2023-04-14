@@ -171,8 +171,10 @@ def stream():
     keyword = request.form['question']
     context = request.form['context']
     session['messages']  = get_user_messages(user_id)
+    temperature = float(request.form['temperature'])
+
     if session['messages'] == []:
-        words = int(request.form['words']) if request.form['words'] != '' else 500
+        words = int(request.form['words']) if request.form['words'] != '' else 800
         template_file = request.files.get('template_file')
         if not template_file:
             dropdown = request.form.get('dropdown')
@@ -180,14 +182,51 @@ def stream():
         else:
             prompt_template = template_file.read().decode('utf-8')
         if 'url' in prompt_template:
-            text = get_content(keyword)
-            question = f"{prompt_template.format(url=text)!s}"
+            keyword_list = [line.rstrip() for line in keyword.split('\n') if line.strip()]
+            if len(keyword_list) == 1:
+                text = get_content(keyword)
+                question = f"{prompt_template.format(url=text)!s}"
+            else:
+                extract_text = ''
+                count = 1
+                for line in keyword_list:
+                    messages = []
+                    text = get_content(line)
+                    print(text)
+                    if text != 'Error':
+                        question = f"{prompt_template.format(url=text)!s}"
+                        try:
+                            messages.append({"role": "user", "content": question})
+                            response = openai.ChatCompletion.create(
+                            model= model,
+                            messages= messages,
+                            temperature=temperature,
+                            top_p=1.0,
+                            frequency_penalty=0,
+                            presence_penalty=0
+                            )
+                            print(f"{response['usage']}\n")
+                            session['tokens'] = response['usage']['total_tokens']
+                        except Exception as e:
+                            print(e)
+                            return "Connection Error! Please try again."
+                        messages.append({"role": "assistant", "content": response["choices"][0]['message']['content']})
+                        join_message = "".join([msg["content"] for msg in messages])
+                        print("精简前messages:", messages)
+                        # rows = history_messages(user_id) # 历史记录条数
+                        # if len(messages) > rows:
+                        #     messages = messages[-rows:] #仅保留最新两条
+                        # session['messages'] = messages
+                        count_chars(join_message, user_id, messages)
+                        extract_text += f'【文章{count}：】\n' + response["choices"][0]['message']['content'] + '\n'
+                        count += 1
+                prompt_template = list(prompts.values())[-1]
+                question = f"{prompt_template.format(words=words, context=extract_text)!s}"
         else:
             question = f"{prompt_template.format(keyword=keyword, words=words, context=context)!s}"
     else:
         question = keyword
-
-    temperature = float(request.form['temperature'])
+        
     messages = session['messages']
     # tokens = session.get('tokens')
     def process_data():
@@ -224,3 +263,6 @@ def stream():
     print(session)    
     session['tokens'] = 0
     return 'stream_get/' + unique_url                
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5858)

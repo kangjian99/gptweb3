@@ -16,8 +16,9 @@ def count_textchars(text):
 def get_content(url):
     if 'mp.weixin' in url:
         return get_wx_content(url)
-    if 'baijiahao' in url:
-        return get_bjh_content(url)
+    if 'baijiahao' or 'mbd.baidu' in url:
+        return get_baidu_content(url)
+    return 'Error'
         
 def get_wx_content(url):
     headers = {
@@ -75,7 +76,11 @@ def get_wx_content(url):
         
     return content
 
-def get_bjh_content(url):
+def get_baidu_content(url):
+    if 'baijiahao' in url:
+        hostlink = 'baijiahao.baidu.com'
+    if 'mbd.baidu' in url:
+        hostlink = 'mbd.baidu.com'
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -83,7 +88,7 @@ def get_bjh_content(url):
         'Cache-Control': 'max-age=0',
         'Connection': 'keep-alive',
         'Cookie': 'BIDUPSID=99C3247B58571936BAFC9FD8A493FC1E; PSTM=1678622396; BAIDUID=99C3247B585719360DDCDA13FB020A1C:FG=1; BAIDUID_BFESS=99C3247B585719360DDCDA13FB020A1C:FG=1; BDRCVFR[C0p6oIjvx-c]=I67x6TjHwwYf0; delPer=0; PSINO=1; H_PS_PSSID=36544_38470_38368_38468_38289_38377_36807_38486_37923_38493; BDUSS=HIwdVlzNlZEVE41TXdWZTB0ZVRQN3k5Rmt1T3BaTWJ2Um5GZGo5YkR4S2J-VjVrRVFBQUFBJCQAAAAAAAAAAAEAAACZpWg5waLM5cn5yrXR6crSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJtwN2SbcDdkM; BDUSS_BFESS=HIwdVlzNlZEVE41TXdWZTB0ZVRQN3k5Rmt1T3BaTWJ2Um5GZGo5YkR4S2J-VjVrRVFBQUFBJCQAAAAAAAAAAAEAAACZpWg5waLM5cn5yrXR6crSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJtwN2SbcDdkM; ab_sr=1.0.1_YTdmZjYzMzFlMDliZDQ5MjdmM2ViZWNjN2M5ZjhlZDkyZGRjMmQ4ZWZjZGZiMWJhYzRkY2Y2MDYwM2JlNzg1MGFkZjE0M2UxMzBiNmRiNTU3YzIxNDExZDEwOTRmNTIzMjljNGVmNWU0Mjc2ZTJkM2NiMTJmMGMzOTUzNDIyNjU4ZjA1NmViOGQ0Y2Y4NDM5OWJmZTA5NDM3ZjE3NDY0Mg==',
-        'Host': 'baijiahao.baidu.com',
+        'Host': hostlink,
         'Referer': 'https://passport.baidu.com/',
         'sec-ch-ua': '"Chromium";v="112", "Google Chrome";v="112", "Not:A-Brand";v="99"',
         'sec-ch-ua-mobile': '?0',
@@ -115,8 +120,12 @@ def get_bjh_content(url):
     # 将所有正文内容拼接在一起
     content = ''.join([tag.text for tag in content_tags])
 
-    print("标题：", title)
-    print("作者：", author)
-    print("正文：", content)
     content = '标题：' + title + '\n作者：' + author + '\n\n' + content
+    
+    cn_char_count, en_char_count = count_textchars(content)
+    print("\n字数：", cn_char_count, en_char_count)
+    # 如果字符数大于3000，仅保留前2500个字符
+    if cn_char_count + en_char_count > 3000:
+        content = content[:2500]
+        
     return content
