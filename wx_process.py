@@ -104,7 +104,7 @@ def get_baidu_content(url):
     response = requests.get(url, headers=headers)
     response.encoding = 'UTF-8'
     html = response.text
-    print(response, "html text:", html)
+    print(response)
     # 使用BeautifulSoup解析HTML
     soup = BeautifulSoup(html, 'html.parser')
 
