@@ -211,6 +211,10 @@ document.getElementById("question-form").addEventListener("submit", function(eve
     formData.append("dropdown", dropdown);
     formData.append("template_file", template_file);
     
+    var text_last = [];
+    text_last[0] = "";
+    var part = 0;
+    
     function checkHeightAndScroll(element, maxHeight) {
         const parentElement = element.parentNode;
         if (element.scrollHeight > maxHeight) {
@@ -225,7 +229,18 @@ document.getElementById("question-form").addEventListener("submit", function(eve
             document.getElementById("user_tem").innerHTML = "Tem= " + temperature;
             // console.log("Received data:", event.data);
             const data = JSON.parse(event.data);  //先对event.data解析JSON
-            const html = data.data;
+            var html = data.data;
+            // 处理分段信息连续显示
+            if (html.length < text_last[part].length) {
+                part = part + 1;
+                console.log("分段:", part);
+                text_last[part] = "";
+                mergedtext = text_last.join('<br>(continue...)<br>');
+            }
+            text_last[part] = html;
+            if (part != 0) {
+                html = mergedtext + html;
+            }
             const resElement = document.getElementById("res");
             resElement.innerHTML = ""; // 首先清空容器
             resElement.insertAdjacentHTML("beforeend", html);
