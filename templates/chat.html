@@ -211,8 +211,7 @@ document.getElementById("question-form").addEventListener("submit", function(eve
     formData.append("dropdown", dropdown);
     formData.append("template_file", template_file);
     
-    var text_last = [];
-    text_last[0] = "";
+    var text_last = [""];
     var part = 0;
     
     function checkHeightAndScroll(element, maxHeight) {
