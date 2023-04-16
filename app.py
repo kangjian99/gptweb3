@@ -263,9 +263,12 @@ def stream():
                 print("精简前messages:", messages)
                 rows = history_messages(user_id, int(dropdown)) # 历史记录条数
                 if len(messages) > rows:
-                    messages = [] if rows == 0 else messages[-rows:] #仅保留最新rows条
-                save_user_messages(user_id, messages) 
-                # session['messages'] = messages
+                    messages = messages[-rows:] #对话仅保留最新rows条
+                if rows == 0:
+                    save_user_messages(user_id, []) # 清空历史记录
+                else:
+                    save_user_messages(user_id, messages)
+		# session['messages'] = messages
                 count_chars(join_message, user_id, messages)
             
     if stream_data:
