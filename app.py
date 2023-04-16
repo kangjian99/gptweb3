@@ -189,15 +189,15 @@ def stream():
     user_id = session.get('user_id')
     keyword = request.form['question']
     context = request.form['context']
-    session['messages']  = get_user_messages(user_id)
     temperature = float(request.form['temperature'])
+    dropdown = request.form.get('dropdown')
     question = ['']
-
+    
+    session['messages']  = get_user_messages(user_id)
     if session['messages'] == []:
         words = int(request.form['words']) if request.form['words'] != '' else 800
         template_file = request.files.get('template_file')
         if not template_file:
-            dropdown = request.form.get('dropdown')
             prompt_template = list(prompts.values())[int(dropdown) - 1]
         else:
             prompt_template = template_file.read().decode('utf-8')
@@ -220,10 +220,6 @@ def stream():
                         messages.append({"role": "assistant", "content": content})
                         join_message = "".join([msg["content"] for msg in messages])
                         print("精简前messages:", messages)
-                        # rows = history_messages(user_id) # 历史记录条数
-                        # if len(messages) > rows:
-                        #     messages = messages[-rows:] #仅保留最新两条
-                        # session['messages'] = messages
                         count_chars(join_message, user_id, messages)
                         title_keyword = "标题"
                         if title_keyword in content:
@@ -233,6 +229,9 @@ def stream():
                         count += 1
                 prompt_template = list(prompts.values())[-1]
                 question[0] = f"{prompt_template.format(words=words, context=extract_text)!s}"
+        elif 'lang' in prompt_template:
+            text = split_text(keyword, 50000, 6000)
+            question = [prompt_template.format(lang=t) for t in text]            
         else:
             question[0] = f"{prompt_template.format(keyword=keyword, words=words, context=context)!s}"
     else:
@@ -262,10 +261,10 @@ def stream():
                 messages.append({"role": "assistant", "content": res['content']})
                 join_message = "".join([msg["content"] for msg in messages])
                 print("精简前messages:", messages)
-                # rows = history_messages(user_id) # 历史记录条数
-                # if len(messages) > rows:
-                #     messages = messages[-rows:] #仅保留最新两条
-                save_user_messages(user_id, []) # messages
+                rows = history_messages(user_id, int(dropdown)) # 历史记录条数
+                if len(messages) > rows:
+                    messages = [] if rows == 0 else messages[-rows:] #仅保留最新rows条
+                save_user_messages(user_id, messages) 
                 # session['messages'] = messages
                 count_chars(join_message, user_id, messages)
             
