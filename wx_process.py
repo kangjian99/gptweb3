@@ -36,10 +36,6 @@ def split_text(text, max_length, index):
         content_list[-2] += content_list[-1]
         del content_list[-1]
 
-    with open('content_list.txt', 'w') as f:
-        for content in content_list:
-            f.write(content + '\n*****\n')
-
     return content_list
         
 def get_content(url):
