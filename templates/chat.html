@@ -110,8 +110,9 @@ User: {{ user_id}}<br>
         </div>
         <hr />
         <div style="text-align: left"><b>{{ model }}</b>
+        </div>
         <div id="user_tem"><b>回复 - Tem={{ temperature }} :</b>
-</div>
+		</div>
             <div class="card" style="height: 400px; overflow-y: scroll;">
                 <div class="card-body" style="text-align:left; margin-top: 0px; white-space: pre-wrap;" id="res">{{ res|safe }}</div>
             </div>
@@ -121,20 +122,26 @@ User: {{ user_id}}<br>
             </div>
             <button onclick="copyToClipboard()" class="btn btn-success" style="float:right; margin-top: 1px; transform: scale(0.8);">复制结果</button>
             <br><br>
-            <form id="clear-form" method="post">
-                <div class="form-group" style="text-align: center;">
-                    <button name="clear" value="1" class="btn btn-primary" style="transform: scale(0.8);">回到页首</button>
-                </div>
-                <input type="hidden" name="logged_in" value="{{ session.get('logged_in') }}">
-            </form>
-
-        </div>
+            
+			<div style="text-align: center;">
+				<button id="backtop" name="backtop" value="1" class="btn btn-primary" style="transform: scale(0.8);">回到页首</button>
+				<div style="display: inline-block;">
+					<form id="clear-form" method="post">
+						<div class="form-group" style="text-align: center; margin-bottom: 0;">
+							<button name="clear" value="1" class="btn btn-primary" style="transform: scale(0.8); margin-left: 20px;">Clear</button>
+						</div>
+						<input type="hidden" name="logged_in" value="{{ session.get('logged_in') }}">
+					</form>
+				</div>
+			</div>
+	</div>
 </div>
-                <form action="{{ url_for('logout') }}" method="get" style="float: right; transform: scale(0.8);">
-  <button class="btn btn-secondary">Logout</button>
-</form>
-    </div>
 </div>
+	<form action="{{ url_for('logout') }}" method="get">
+		<div style="text-align: right;">
+			<button class="btn btn-secondary" style="margin-right: 18px; transform: scale(0.8);">Logout</button>
+		</div>
+	</form>
    
     <script>
 function resetPage() {
@@ -287,6 +294,17 @@ document.getElementById("question-form").addEventListener("submit", function(eve
 		});
 	}
 
+});
+
+// 为 "回到页首" 按钮添加事件监听器
+document.getElementById("backtop").addEventListener("click", function(event) {
+    event.preventDefault();
+    let scrollPosition = 0;
+    window.scroll({
+        top: scrollPosition,
+        behavior: 'smooth'
+    });
+    enable_submit();
 });
 
 // Clear操作
