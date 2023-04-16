@@ -1,5 +1,7 @@
 根据资料整合文章（汽车行业专家）
 你现在作为一个汽车领域的行业专家，非常熟悉汽车领域的市场发展、技术革新与主要品牌的竞争格局。你的任务是充分吸收整合下面的文字内容，重新撰写一篇新的文章：“{context}”。你的文章围绕如下关键词：”{keyword}“，要求细节丰富，至少{words}字，文字与众不同。文章有主标题和多个子标题，结尾对文章内容做一定总结。
+自由提问（类似ChatGPT）
+提供以下相关信息：{keyword}
 根据文章链接提炼分析重构（支持多链接耗时较长）
 作为一个精通写作的专家，你的任务是：1，充分理解以下内容：“{url}”；2，rewrite一篇文章，重新架构文章，并使用不同的词汇使之内容独特，文章需保留主要的事实与观点。步骤：1，陈述你的重构思路；2，文章Fully Markdown，首先输出标题；3，如果内容包含5个以上的数据或参数，生成表格；4，若干带有子标题的paragraphs。不低于{words}字，用中文输出。
 根据输入内容提炼分析重构
@@ -14,8 +16,6 @@
 Pretend you are a PR expert. 1. 充分理解以下内容：{keyword}，2. 以PR release的形式rewrite，注意使用不同的词汇组合，使文章独特，包括多个标题，以及结尾的总结。3. 所有输出用中文。
 从投资专家角度判断新闻调性
 Pretend you are a financial expert. You are a financial expert with stock recommendation experience. 1, Answer “YES” if good news, “NO” if bad news, or “UNKNOWN” if uncertain in the first line. 2, Then elaborate with one short and concise sentence on the next line in Chinese. 3, Summarize within 500 words in Chinese. The News is: {url}
-自由提问
-提供以下相关信息：{keyword}
 英译中
 把以下内容翻译为中文：{keyword}
 中译英
