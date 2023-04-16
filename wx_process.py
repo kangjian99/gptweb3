@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-def longtext(text, max, index):
+def split_text(text, max_length, index):
     cn_pattern = re.compile(r'[\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef]') #匹配中文字符及标点符号
     cn_chars = cn_pattern.findall(text)
 
@@ -13,16 +13,33 @@ def longtext(text, max, index):
     en_char_count = len(en_chars)
     
     print("\n字数：", cn_char_count, en_char_count)
-    # 如果字符数大于3000，仅保留前2500个字符
-    if cn_char_count > max:
-        text = text[:max]
-    content_list = [text[i:i+index] for i in range(0, len(text), index)]
+    # Truncate text if it exceeds max_length
+    if cn_char_count > max_length or en_char_count > max_length:
+        last_newline = text.rfind('\n', 0, max_length)
+        if last_newline != -1:
+            text = text[:last_newline]
+
+    # Split text into sub-strings
+    content_list = []
+    start = 0
+    while start < len(text):
+        end = start + index
+        if end < len(text):
+            next_newline = text.find('\n', end)
+            if next_newline != -1:
+                end = next_newline + 1
+        content_list.append(text[start:end])
+        start = end
+
+    # Merge short sub-strings
     if len(content_list) > 1 and len(content_list[-1]) < 200:
         content_list[-2] += content_list[-1]
         del content_list[-1]
+
     with open('content_list.txt', 'w') as f:
         for content in content_list:
-            f.write(content + '\n***\n')
+            f.write(content + '\n*****\n')
+
     return content_list
         
 def get_content(url):
@@ -80,7 +97,7 @@ def get_wx_content(url):
     content = re.sub('\n{3,}', '\n\n', content)
     content = '标题：' + title + '\n作者：' + author + '\n\n' + content
 
-    content_list = longtext(content, 6000, 2000)
+    content_list = split_text(content, 6000, 2000)
 
     return content_list
 
@@ -126,10 +143,10 @@ def get_baidu_content(url):
     content_tags = soup.find_all('div', class_='_3ygOc')
 
     # 将所有正文内容拼接在一起
-    content = ''.join([tag.text for tag in content_tags])
+    content = '\n'.join([tag.text for tag in content_tags])
     
     content = '标题：' + title + '\n作者：' + author + '\n\n' + content
     
-    content_list = longtext(content, 6000, 2000)
+    content_list = split_text(content, 6000, 2000)
     
     return content_list
