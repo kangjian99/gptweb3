@@ -68,10 +68,12 @@ def get_user_messages(user_id):
         pass
     return messages
 
-def history_messages(user_id):
+def history_messages(user_id, dropdown=0):
     rows = 2
     if user_id == 'sonic':
         rows = 4
+    if dropdown != 2:
+        rows = 0
     return rows
 
 def num_tokens(string: str) -> int:
