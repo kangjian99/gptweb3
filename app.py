@@ -19,7 +19,8 @@ stream_data = {}
 def get_prompt_templates():
     filename = 'prompts.txt'
     with open(filename, 'r') as f:
-        lines = f.readlines()
+        content = f.read()
+    lines = content.split('***\n')
     prompts = {}
     for i in range(0, len(lines)-1, 2):
         prompts[lines[i].strip()] = lines[i+1].strip()
@@ -190,23 +191,23 @@ def stream():
     keyword = request.form['question']
     context = request.form['context']
     temperature = float(request.form['temperature'])
-    dropdown = request.form.get('dropdown')
+    template_file = request.files.get('template_file')
+    if not template_file:
+        dropdown = request.form.get('dropdown')
+        prompt_template = list(prompts.items())[int(dropdown) - 1] #元组
+    else:
+        prompt_template = template_file.read().decode('utf-8')
     question = ['']
     
     session['messages']  = get_user_messages(user_id)
     if session['messages'] == []:
         words = int(request.form['words']) if request.form['words'] != '' else 800
-        template_file = request.files.get('template_file')
-        if not template_file:
-            prompt_template = list(prompts.values())[int(dropdown) - 1]
-        else:
-            prompt_template = template_file.read().decode('utf-8')
-        if 'url' in prompt_template:
+        if 'url' in prompt_template[1]:
             keyword_list = [line.rstrip() for line in keyword.split('\n') if line.strip()]
             if len(keyword_list) == 1: # 单链接
                 text = get_content(keyword)
-                question = [prompt_template.format(url=t, words=words) for t in text]
-                question[1:] = [list(prompts.values())[-2].format(content=t, count=i+2) for i, t in enumerate(text[1:])]
+                question = [prompt_template[1].format(url=t, words=words) for t in text]
+                question[1:] = [list(prompts.values())[-2].format(content=t, count=i+2) for i, t in enumerate(text[1:])] #超长用特定模版处理
             else:
                 extract_text = ''
                 count = 1
@@ -215,7 +216,7 @@ def stream():
                     text = get_content(line)
                     print(text)
                     if text != 'Error':
-                        question[0] = f"{prompt_template.format(url=text[0], words=words)!s}"
+                        question[0] = f"{prompt_template[1].format(url=text[0], words=words)!s}"
                         content = Chat_Completion(question[0], temperature, messages)
                         messages.append({"role": "assistant", "content": content})
                         join_message = "".join([msg["content"] for msg in messages])
@@ -227,13 +228,13 @@ def stream():
                             content = content[title_index:] # 去除开头干扰性语句
                         extract_text += f'【文章{count}：】\n' + content + '\n'
                         count += 1
-                prompt_template = list(prompts.values())[-1]
-                question[0] = f"{prompt_template.format(words=words, context=extract_text)!s}"
-        elif 'lang' in prompt_template:
+                prompt_template[1] = list(prompts.values())[-1] #多链接提炼整合后用特定模版处理
+                question[0] = f"{prompt_template[1].format(words=words, context=extract_text)!s}"
+        elif 'lang' in prompt_template[1]:
             text = split_text(keyword, 50000, 6000)
-            question = [prompt_template.format(lang=t) for t in text]            
+            question = [prompt_template[1].format(lang=t) for t in text]            
         else:
-            question[0] = f"{prompt_template.format(keyword=keyword, words=words, context=context)!s}"
+            question[0] = f"{prompt_template[1].format(keyword=keyword, words=words, context=context)!s}"
     else:
         question[0] = keyword
         
@@ -261,14 +262,14 @@ def stream():
                 messages.append({"role": "assistant", "content": res['content']})
                 join_message = "".join([msg["content"] for msg in messages])
                 print("精简前messages:", messages)
-                rows = history_messages(user_id, int(dropdown)) # 历史记录条数
+                rows = history_messages(user_id, prompt_template[0]) # 历史记录条数
                 if len(messages) > rows:
                     messages = messages[-rows:] #对话仅保留最新rows条
                 if rows == 0:
                     save_user_messages(user_id, []) # 清空历史记录
                 else:
                     save_user_messages(user_id, messages)
-		# session['messages'] = messages
+                # session['messages'] = messages
                 count_chars(join_message, user_id, messages)
             
     if stream_data:

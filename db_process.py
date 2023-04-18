@@ -68,11 +68,11 @@ def get_user_messages(user_id):
         pass
     return messages
 
-def history_messages(user_id, dropdown=0):
+def history_messages(user_id, prompt_template):
     rows = 2
     if user_id == 'sonic':
         rows = 4
-    if dropdown != 2:
+    if 'Chat' not in prompt_template:
         rows = 0
     return rows
 
