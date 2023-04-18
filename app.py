@@ -205,7 +205,7 @@ def stream():
         if 'url' in prompt_template[1]:
             keyword_list = [line.rstrip() for line in keyword.split('\n') if line.strip()]
             if len(keyword_list) == 1: # 单链接
-                text = get_content(keyword)
+                text = get_content(keyword.strip())
                 question = [prompt_template[1].format(url=t, words=words) for t in text]
                 question[1:] = [list(prompts.values())[-2].format(content=t, count=i+2) for i, t in enumerate(text[1:])] #超长用特定模版处理
             else:
