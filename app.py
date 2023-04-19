@@ -15,16 +15,7 @@ app.config['SECRET_KEY'] = SESSION_SECRET_KEY # SECRET_KEY是Flask用于对sessi
 
 timeout_streaming = 10
 stream_data = {}
-
-def get_prompt_templates():
-    filename = 'prompts.txt'
-    with open(filename, 'r') as f:
-        content = f.read()
-    lines = content.split('***\n')
-    prompts = {}
-    for i in range(0, len(lines)-1, 2):
-        prompts[lines[i].strip()] = lines[i+1].strip()
-    return prompts
+table_name = 'prompts'
 
 def Chat_Completion(question, tem, messages):
 	try:
@@ -133,7 +124,7 @@ def count_chars(text, user_id, messages):
 @app.route('/', methods=['GET', 'POST'])
 def get_request_json():
     # global session['messages']
-    prompts = get_prompt_templates()
+    prompts = read_table_data(table_name)
     if request.method == 'POST':
         if 'clear' in request.form:
             session['messages'] = [] #不改变session['logged_in']
@@ -182,7 +173,7 @@ def stream_get(unique_url):
 def stream():
     if 'messages' not in session:
         session['messages'] = []
-    prompts = get_prompt_templates()
+    prompts = read_table_data(table_name)
 
     if len(request.form['question']) < 1:
         return redirect(url_for('get_request_json'))

@@ -45,6 +45,22 @@ def insert_db(result, user_id=None, messages=[]):
     cnxn.commit()
     cnxn.close()
     
+def read_table_data(table_name):
+    cnxn = pyodbc.connect(f'DRIVER={driver};SERVER={server};PORT=1433;DATABASE={database};UID={db_username};PWD={db_password}')
+    cursor = cnxn.cursor()
+
+    # 从表格中读取数据
+    cursor.execute(f"SELECT * FROM {table_name}")
+    rows = cursor.fetchall()
+
+    # 将数据转换为字典
+    prompts_dict = {row.name.strip('"'): row.prompt.strip('"') for row in rows}
+
+    cursor.close()
+    cnxn.close()
+
+    return prompts_dict
+       
 def clear_messages(user_id):
     if not os.path.exists(directory):
         os.mkdir(directory)
