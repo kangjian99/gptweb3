@@ -41,7 +41,7 @@ def split_text(text, max_length, index):
 def get_content(url):
     if 'mp.weixin' in url:
         return get_wx_content(url)
-    if 'baijiahao' or 'mbd.baidu' in url:
+    if 'baijiahao' in url or 'mbd.baidu' in url:
         return get_baidu_content(url)
     return 'Error'
         
