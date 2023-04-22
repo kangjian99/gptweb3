@@ -193,7 +193,7 @@ def stream():
     session['messages']  = get_user_messages(user_id)
     if session['messages'] == []:
         words = int(request.form['words']) if request.form['words'] != '' else 800
-        if 'url' in prompt_template[1]:
+        if '{url}' in prompt_template[1]:
             keyword_list = [line.rstrip() for line in keyword.split('\n') if line.strip()]
             if len(keyword_list) == 1: # 单链接
                 text = get_content(keyword.strip())
@@ -221,13 +221,16 @@ def stream():
                         count += 1
                 prompt_template[1] = list(prompts.values())[-1] #多链接提炼整合后用特定模版处理
                 question[0] = f"{prompt_template[1].format(words=words, context=extract_text)!s}"
-        elif 'lang' in prompt_template[1]:
+        elif '{lang}' in prompt_template[1]:
             text = split_text(keyword, 50000, 6000)
             question = [prompt_template[1].format(lang=t) for t in text]            
         else:
             question[0] = f"{prompt_template[1].format(keyword=keyword, words=words, context=context)!s}"
     else:
-        question[0] = keyword
+        if 'act' in prompt_template[0]:
+            question[0] = keyword + '\n' + prompt_template[1].split('\n')[0]
+        else:
+            question[0] = keyword
         
     messages = session['messages']
     # tokens = session.get('tokens')
