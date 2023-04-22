@@ -67,8 +67,8 @@ User: {{ user_id}}<br>
     <div class="col-7">
       <label for="temperature">Temperature:</label>
       <div class="range-container">
-        <input type="range" class="form-range" name="temperature" id="tem" min=0 max=1 step=0.1 value=0.5 oninput="document.getElementById('num').value = this.value" title="Temperature slider" class="custom-range">
-        <input type="text" id="num" placeholder="0.5" style="border: none;background: none; width: 50px;" disabled class="form-control">
+        <input type="range" class="form-range" name="temperature" id="tem" min=0 max=1 step=0.1 value=0.8 oninput="document.getElementById('num').value = this.value" title="Temperature slider" class="custom-range">
+        <input type="text" id="num" placeholder="0.8" style="border: none;background: none; width: 50px;" disabled class="form-control">
       </div>
     </div>
   </div>
@@ -100,7 +100,7 @@ User: {{ user_id}}<br>
                     
                     <div id="loading" style="display:none; color:gray;"><b>Waiting for the response...</b></div>
                     
-                     <div id="empty" style="display:none; color:black;">Question can't be empty!</div>
+                     <div id="empty" style="display:none; color:red;">Question can't be empty!</div>
                     
 <div id="response-card" style="display: none;">                    
 <div class="card">
