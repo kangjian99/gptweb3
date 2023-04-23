@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, session, redirect, url_for, flash, jsonify, Response, stream_with_context
+from flask import Flask, request, render_template, session, redirect, url_for, flash, Response
 import re
 import json
 import requests
@@ -195,10 +195,14 @@ def stream():
         words = int(request.form['words']) if request.form['words'] != '' else 800
         if '{url}' in prompt_template[1]:
             keyword_list = [line.rstrip() for line in keyword.split('\n') if line.strip()]
-            if len(keyword_list) == 1: # 单链接
-                text = get_content(keyword.strip())
-                question = [prompt_template[1].format(url=t, words=words) for t in text]
-                question[1:] = [list(prompts.values())[-2].format(content=t, count=i+2) for i, t in enumerate(text[1:])] #超长用特定模版处理
+            text = get_content(keyword.strip())
+            if len(keyword_list) == 1 or text == 'Error': # 单链接或非链接
+                if text == 'Error':
+                    text = keyword + context
+                    question[0] = prompt_template[1].format(url=text, words=words)
+                else:
+                    question = [prompt_template[1].format(url=t, words=words) for t in text]
+                    question[1:] = [list(prompts.values())[-2].format(content=t, count=i+2) for i, t in enumerate(text[1:])] #超长用特定模版处理
             else:
                 extract_text = ''
                 count = 1
@@ -219,7 +223,8 @@ def stream():
                             content = content[title_index:] # 去除开头干扰性语句
                         extract_text += f'【文章{count}：】\n' + content + '\n'
                         count += 1
-                prompt_template[1] = list(prompts.values())[-1] #多链接提炼整合后用特定模版处理
+                prompt_template = (prompt_template[0], list(prompts.values())[-1])
+ #多链接提炼整合后用特定模版处理
                 question[0] = f"{prompt_template[1].format(words=words, context=extract_text)!s}"
         elif '{lang}' in prompt_template[1]:
             text = split_text(keyword, 50000, 6000)
