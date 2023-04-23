@@ -211,8 +211,7 @@ def stream():
                     text = get_content(line)
                     print(text)
                     if text != 'Error':
-                        question[0] = f"{prompt_template[1].format(url=text[0], words=words)!s}"
-                        print(question[0])
+                        question[0] = f"{prompt_template[1].format(url=text[0], context=context.strip(), words=words)!s}"
                         content = Chat_Completion(question[0], temperature, messages)
                         messages.append({"role": "assistant", "content": content})
                         join_message = "".join([msg["content"] for msg in messages])
