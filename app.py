@@ -194,24 +194,25 @@ def stream():
     if session['messages'] == []:
         words = int(request.form['words']) if request.form['words'] != '' else 800
         if '{url}' in prompt_template[1]:
-            keyword_list = [line.rstrip() for line in keyword.split('\n') if line.strip()]
-            text = get_content(keyword.strip())
-            if len(keyword_list) == 1 or text == 'Error': # 单链接或非链接
+            url_list = extract_links(keyword)
+            text = get_content(url_list[0].strip())
+            if len(url_list) == 1 or text == 'Error': # 单链接或非链接
                 if text == 'Error':
-                    text = keyword + context
-                    question[0] = prompt_template[1].format(url=text, words=words)
+                    text = keyword +'\n' + context
+                    question[0] = prompt_template[1].format(url=text, context=context.strip(), words=words)
                 else:
-                    question = [prompt_template[1].format(url=t, words=words) for t in text]
+                    question[0] = prompt_template[1].format(url=text[0], context=context.strip(), words=words)
                     question[1:] = [list(prompts.values())[-2].format(content=t, count=i+2) for i, t in enumerate(text[1:])] #超长用特定模版处理
             else:
                 extract_text = ''
                 count = 1
-                for line in keyword_list:
+                for line in url_list:
                     messages = []
                     text = get_content(line)
                     print(text)
                     if text != 'Error':
                         question[0] = f"{prompt_template[1].format(url=text[0], words=words)!s}"
+                        print(question[0])
                         content = Chat_Completion(question[0], temperature, messages)
                         messages.append({"role": "assistant", "content": content})
                         join_message = "".join([msg["content"] for msg in messages])

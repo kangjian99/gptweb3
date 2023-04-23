@@ -2,6 +2,18 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
+def extract_links(text):
+    # 更新后的 URL 正则表达式，可以匹配没有 www 的链接
+    url_pattern = re.compile(r'(?:http[s]?://)?(?:www\.)?(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+    
+    # 在文本中查找所有匹配的 URL
+    urls = url_pattern.findall(text)
+    
+    # 如果需要，为没有 http:// 或 https:// 的链接添加 http:// 前缀
+    # urls = ['http://' + url if not url.startswith('http') else url for url in urls]
+    
+    return urls
+
 def split_text(text, max_length, index):
     cn_pattern = re.compile(r'[\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef]') #匹配中文字符及标点符号
     cn_chars = cn_pattern.findall(text)
@@ -35,6 +47,11 @@ def split_text(text, max_length, index):
     if len(content_list) > 1 and len(content_list[-1]) < 200:
         content_list[-2] += content_list[-1]
         del content_list[-1]
+
+    if len(content_list) > 1:
+        with open('content_list.txt', 'w') as f:
+            for content in content_list:
+                f.write(content + '\n*****\n')
 
     return content_list
         
