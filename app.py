@@ -53,7 +53,7 @@ def generate_text(prompt, tem, messages):
             "n": 1,
             "stream": True,
             "presence_penalty": 0,
-            "frequency_penalty": 0,
+            "frequency_penalty": 1,
         }
         timeout = timeout_streaming
 
