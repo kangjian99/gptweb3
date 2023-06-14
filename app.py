@@ -208,7 +208,7 @@ def stream():
             counter += 1
             model_gpt = model_16k if len(prompt) > 2500 else model
             try:
-                for res in send_gpt(prompt, temperature, messages, user_id):
+                for res in send_gpt(model_gpt, prompt, temperature, messages, user_id):
                     if 'content' in res:
                         markdown_message = generate_markdown_message(res['content'])
                         # print(f"Yielding markdown_message: {markdown_message}")  # 添加这一行
