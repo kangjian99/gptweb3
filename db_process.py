@@ -85,11 +85,13 @@ def get_user_messages(user_id):
     return messages
 
 def history_messages(user_id, prompt_template):
-    rows = 2
-    if user_id == 'sonic':
+    rows = 0
+    if user_id == 'sonic' or 'auto' in prompt_template:
         rows = 4
-    if 'Chat' not in prompt_template:
-        rows = 0
+    if 'smart' in prompt_template:
+        rows = 5
+    if 'Chat' in prompt_template:
+        rows = 2
     return rows
 
 def num_tokens(string: str) -> int:
