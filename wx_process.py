@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
+index_max = 8000
+
 def extract_links(text):
     # 更新后的 URL 正则表达式，可以匹配没有 www 的链接
     url_pattern = re.compile(r'(?:http[s]?://)?(?:www\.)?(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
@@ -24,7 +26,7 @@ def split_text(text, max_length, index):
     cn_char_count = len(cn_chars)
     en_char_count = len(en_chars)
     
-    print("\n字数：", cn_char_count, en_char_count)
+    print("\n总字数，中文，英文：", len(text), cn_char_count, en_char_count)
     # Truncate text if it exceeds max_length
     if cn_char_count > max_length or en_char_count > max_length:
         last_newline = text.rfind('\n', 0, max_length)
@@ -110,7 +112,7 @@ def get_wx_content(url):
     content = re.sub('\n{3,}', '\n\n', content)
     content = '标题：' + title + '\n作者：' + author + '\n\n' + content
 
-    content_list = split_text(content, 6000, 2000)
+    content_list = split_text(content, 20000, index_max)
 
     return content_list
 
@@ -147,19 +149,19 @@ def get_baidu_content(url):
     soup = BeautifulSoup(html, 'html.parser')
 
     # 提取标题
-    title = soup.find('div', class_='_28fPT').text
+    title = soup.find('div', class_='_3tNyU').text
 
     # 提取作者
-    author = soup.find('p', class_='_7y5nA').text
+    author = soup.find('p', class_='_2gGWi').text
 
     # 提取正文
-    content_tags = soup.find_all('div', class_='_3ygOc')
+    content_tags = soup.find_all('div', class_='dpu8C _2kCxD')
 
     # 将所有正文内容拼接在一起
     content = '\n'.join([tag.text for tag in content_tags])
     
     content = '标题：' + title + '\n作者：' + author + '\n\n' + content
     
-    content_list = split_text(content, 6000, 2000)
+    content_list = split_text(content, 20000, index_max)
     
     return content_list
