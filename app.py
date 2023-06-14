@@ -179,12 +179,12 @@ def stream():
                 for line in url_list:
                     text = get_content(line)
                     print(f"链接{count}:{text}")
-                    if (text != 'Error') and (len(merge_text)<10000):
+                    if (text != 'Error') and (num_tokens(merge_text+text[0])<10000):
                         merge_text += text[0] + '\n'
                         count += 1
                 question[0] = f"{prompt_template[1].format(url=merge_text, context=context.strip(), words=words)!s}"
         elif '{lang}' in prompt_template[1]:
-            text = split_text(keyword, 50000, 6000)
+            text = split_text(keyword, 20000, 6000)
             question = [prompt_template[1].format(lang=t) for t in text]            
         else:
             question[0] = f"{prompt_template[1].format(keyword=keyword, words=words, context=context)!s}"
@@ -206,7 +206,7 @@ def stream():
                 messages = []
                 # time.sleep(5)
             counter += 1
-            model_gpt = model_16k if len(prompt) > 2500 else model
+            model_gpt = model_16k if num_tokens(prompt) > 2500 else model
             try:
                 for res in send_gpt(model_gpt, prompt, temperature, messages, user_id):
                     if 'content' in res:
