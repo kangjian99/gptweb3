@@ -164,7 +164,7 @@ def stream():
     if session['messages'] == []:
         words = int(request.form['words']) if request.form['words'] != '' else 800
         if '{url}' in prompt_template[1]:
-            url_list = extract_links(keyword+context)
+            url_list, _ = extract_links(keyword+context)
             text = get_content(url_list[0].strip())
             if len(url_list) == 1 or text == 'Error': # 单链接或非链接
                 if text == 'Error':
@@ -185,6 +185,7 @@ def stream():
                         merge_text += text[0] + '\n'
                         count += 1
                 if '定制文章' in prompt_template[0]:
+                   _, context = extract_links(context)
                    question[0] = f"{prompt_template[1].format(keyword=keyword, url=first_url_text, context=merge_text+context.strip(), words=words)!s}" 
                 else:
                     question[0] = f"{prompt_template[1].format(url=first_url_text+merge_text, context=context.strip(), words=words)!s}"
