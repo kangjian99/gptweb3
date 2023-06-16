@@ -65,6 +65,10 @@ def get_content(url):
         return get_wx_content(url)
     if 'baijiahao' in url or 'mbd.baidu' in url:
         return get_baidu_content(url)
+    if 'dongchedi' in url:
+        return get_dchd_content(url)
+    if 'toutiao' in url:
+        return get_tt_content(url)
     return 'Error'
         
 def get_wx_content(url):
@@ -167,4 +171,96 @@ def get_baidu_content(url):
     
     content_list = split_text(content, 20000, index_max)
     
+    return content_list
+
+def get_dchd_content(url):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+
+    response = requests.get(url, headers=headers)
+    response.encoding = 'utf-8'
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # 提取文章标题
+    title = soup.find('h1', class_="jsx-1513769121 title").text.strip()
+    print("标题：", title)
+
+    # 提取文章作者
+    author = soup.find('a', class_="jsx-1513769121 source g-active-link-text").text.strip()
+    print("作者：", author)
+
+    # 提取发布时间
+    publish_time = soup.find('span', class_="jsx-1513769121 time").text.strip()
+    print("发布时间：", publish_time)
+
+    # 提取正文内容
+    content = ''
+    # 找到 'section' 标签，其 id 属性为 'article'
+    section = soup.find('section', id='article')
+    # 如果找到了 section，抓取其中的 <p> 标签内容
+    if section:
+        for p_tag in section.find_all('p'):
+            content += p_tag.get_text() + '\n'
+    else:
+        print("找不到指定的 section")
+
+    content = '标题：' + title + '\n作者：' + author + '\n\n' + content
+
+    content_list = split_text(content, 20000, index_max)
+
+    return content_list
+
+def get_tt_content(url):
+    headers = {
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'zh-CN,zh;q=0.9',
+        'cache-control': 'max-age=0',
+        'cookie': '__ac_signature=_02B4Z6wo00f01xA9xAAAAIDAhOufD1EU9dMQHcCAAKA296; tt_webid=7215872493613008440; ttcid=1cfa7ab5c4614326b0d375faf038b4bd28; csrftoken=8cfaba15f85bbd11c84525ff5beb1255; _ga=GA1.1.1287499458.1680076252; s_v_web_id=verify_libfqro9_JjEzLdW1_i5Gp_4TPs_8paC_ieX7x4dgSwtA; local_city_cache=%E5%8C%97%E4%BA%AC; passport_csrf_token=18c3f696801c2282c8eafdd1804d2bee; _S_WIN_WH=1510_852; _S_DPR=2; _S_IPAD=0; n_mh=MJsBwg-wlGGe2CNMPTg43RYAoHiWBGJ9fHISF4kDg-8; sso_uid_tt=a10931b713bd2ace0d83cb612d7f09bf; sso_uid_tt_ss=a10931b713bd2ace0d83cb612d7f09bf; toutiao_sso_user=952c4be4bcc34f6b104ef71aa0efd92d; toutiao_sso_user_ss=952c4be4bcc34f6b104ef71aa0efd92d; sid_ucp_sso_v1=1.0.0-KGE2N2Y0ZDUwNGVjMzRkM2ZhNTcyNTY3MmYyMjUwYzA4ZTI5MzA5M2QKGwie96DvGBDri6-kBhgYIAww0__VugU4BkD0BxoCbGYiIDk1MmM0YmU0YmNjMzRmNmIxMDRlZjcxYWEwZWZkOTJk; ssid_ucp_sso_v1=1.0.0-KGE2N2Y0ZDUwNGVjMzRkM2ZhNTcyNTY3MmYyMjUwYzA4ZTI5MzA5M2QKGwie96DvGBDri6-kBhgYIAww0__VugU4BkD0BxoCbGYiIDk1MmM0YmU0YmNjMzRmNmIxMDRlZjcxYWEwZWZkOTJk; passport_auth_status=9315fda5e6f2caa53ff8dd020d75229e%2C; passport_auth_status_ss=9315fda5e6f2caa53ff8dd020d75229e%2C; sid_guard=e1512f203550c21987d92dc86788d922%7C1686881772%7C5184001%7CTue%2C+15-Aug-2023+02%3A16%3A13+GMT; uid_tt=4766faec1529edea608729aab7f4a09a; uid_tt_ss=4766faec1529edea608729aab7f4a09a; sid_tt=e1512f203550c21987d92dc86788d922; sessionid=e1512f203550c21987d92dc86788d922; sessionid_ss=e1512f203550c21987d92dc86788d922; sid_ucp_v1=1.0.0-KDBmODBkMDU3ODI3NGY0ZmM2Yjg0ZDZlZjFmNjZlNjJiYTg4N2YwMTkKFQie96DvGBDsi6-kBhgYIAw4BkD0BxoCaGwiIGUxNTEyZjIwMzU1MGMyMTk4N2Q5MmRjODY3ODhkOTIy; ssid_ucp_v1=1.0.0-KDBmODBkMDU3ODI3NGY0ZmM2Yjg0ZDZlZjFmNjZlNjJiYTg4N2YwMTkKFQie96DvGBDsi6-kBhgYIAw4BkD0BxoCaGwiIGUxNTEyZjIwMzU1MGMyMTk4N2Q5MmRjODY3ODhkOTIy; store-region=cn-bj; store-region-src=uid; odin_tt=46681f6e7b3aa0b5ee17474fa546b48cca5c0b559342d0423c00e565c9bfa2f9224e0953758b13a4361dd92ee6d57958; _ga_QEHZPBE5HH=GS1.1.1686879437.6.1.1686881777.0.0.0; tt_anti_token=vRV6npBSa3B4v5-feba4d186d346e97ed22334172ffb1b9d76a3704d359e8d874da6a760c253efd; ttwid=1%7CDmJFaTgEYgKBKp7CGB6pzRXB-prJ_gTUpOxDPY8ii74%7C1686881778%7Cef12b27cb948fe17f0ad681204332ae9804bbe008a60e9a8175b3641d5a3ec82; tt_scid=UINlxdzddw.CVr-qXOu5.iglvfNDlaVESagl7n2u1h5Ij.LZWXNV2xBMoAWurquG320e; msToken=5BcTWycxubgx4FMvWt0ZpoCEPltprIemlSqkWyeN_CGoy4Ed9zoTSjnr4cfOYeCjKLsltxS4m_BV6NhGNohdh0cpXX253xm3p1KJuNRXLn8=',
+        'referer': url,
+        'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'same-site',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+}
+    response = requests.get(url, headers=headers)
+    response.encoding = 'utf-8'
+    # print(response.text)
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # 找到div标签，其class属性为'article-content'
+    container = soup.find('div', class_='article-content')
+
+    if container:
+        # 提取文章标题
+        title = soup.find('h1').text.strip()
+        print("标题：", title)
+
+        # 提取发布时间
+        publish_time = soup.find('div', class_='article-meta').find('span').text.strip()
+        print("发布时间：", publish_time)
+
+        # 提取文章作者
+        author = soup.find('span', class_='name').find('a').text.strip()
+        print("作者：", author)
+
+        # 提取正文内容
+        content = ''
+        article = soup.find('article', class_='syl-article-base tt-article-content syl-page-article syl-device-pc')
+        for paragraph in article.find_all('p'):
+            content += paragraph.text + '\n'
+
+    else:
+        print("找不到指定的容器")
+
+    content = '标题：' + title + '\n作者：' + author + '\n\n' + content
+
+    content_list = split_text(content, 20000, index_max)
+
     return content_list
