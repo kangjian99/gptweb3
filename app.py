@@ -164,7 +164,7 @@ def stream():
     if session['messages'] == []:
         words = int(request.form['words']) if request.form['words'] != '' else 800
         if '{url}' in prompt_template[1]:
-            url_list = extract_links(keyword)
+            url_list = extract_links(keyword+context)
             text = get_content(url_list[0].strip())
             if len(url_list) == 1 or text == 'Error': # 单链接或非链接
                 if text == 'Error':
@@ -175,14 +175,19 @@ def stream():
                     question[1:] = [list(prompts.values())[-2].format(content=t, count=i+2) for i, t in enumerate(text[1:])] #超长用特定模版处理
             else:
                 merge_text = ''
-                count = 1
-                for line in url_list:
+                first_url_text = text[0] + '\n'
+                print("链接1: ", text[0])
+                count = 2
+                for line in url_list[1:]:
                     text = get_content(line)
                     print(f"链接{count}:{text}")
-                    if (text != 'Error') and (num_tokens(merge_text+text[0])<10000):
+                    if (text != 'Error') and (num_tokens(first_url_text+merge_text+text[0])<10000):
                         merge_text += text[0] + '\n'
                         count += 1
-                question[0] = f"{prompt_template[1].format(url=merge_text, context=context.strip(), words=words)!s}"
+                if '定制文章' in prompt_template[0]:
+                   question[0] = f"{prompt_template[1].format(keyword=keyword, url=first_url_text, context=merge_text+context.strip(), words=words)!s}" 
+                else:
+                    question[0] = f"{prompt_template[1].format(url=first_url_text+merge_text, context=context.strip(), words=words)!s}"
         elif '{lang}' in prompt_template[1]:
             text = split_text(keyword, 20000, 6000)
             question = [prompt_template[1].format(lang=t) for t in text]            
