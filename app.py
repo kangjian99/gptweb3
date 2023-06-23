@@ -165,7 +165,7 @@ def stream():
         words = int(request.form['words']) if request.form['words'] != '' else 800
         if '{url}' in prompt_template[1]:
             url_list, _ = extract_links(keyword+context)
-            text = get_content(url_list[0].strip())
+            text = get_content(url_list[0].strip()) if url_list else 'Error'
             if len(url_list) == 1 or text == 'Error': # 单链接或非链接
                 if text == 'Error':
                     text = keyword +'\n' + context
