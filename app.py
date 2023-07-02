@@ -174,21 +174,21 @@ def stream():
                     question[0] = prompt_template[1].format(url=text[0], context=context.strip(), words=words)
                     question[1:] = [list(prompts.values())[-2].format(content=t, count=i+2) for i, t in enumerate(text[1:])] #超长用特定模版处理
             else:
-                merge_text = ''
+                merge_url_text = ''
                 first_url_text = text[0] + '\n'
                 print("链接1: ", text[0])
                 count = 2
                 for line in url_list[1:]:
                     text = get_content(line)
                     print(f"链接{count}:{text}")
-                    if (text != 'Error') and (num_tokens(first_url_text+merge_text+text[0])<10000):
-                        merge_text += text[0] + '\n'
+                    if (text != 'Error') and (num_tokens(first_url_text+merge_url_text+text[0])<10000):
+                        merge_url_text += text[0] + '\n'
                         count += 1
                 if '定制文章' in prompt_template[0]:
                    _, context = extract_links(context)
-                   question[0] = f"{prompt_template[1].format(keyword=keyword, url=first_url_text, context=merge_text+context.strip(), words=words)!s}" 
+                   question[0] = f"{prompt_template[1].format(keyword=keyword, url=first_url_text, context=merge_url_text+context.strip(), words=words)!s}" 
                 else:
-                    question[0] = f"{prompt_template[1].format(url=first_url_text+merge_text, context=context.strip(), words=words)!s}"
+                    question[0] = f"{prompt_template[1].format(url=first_url_text+merge_url_text, context=context.strip(), words=words)!s}"
         elif '{lang}' in prompt_template[1]:
             text = split_text(keyword, 20000, 6000)
             question = [prompt_template[1].format(lang=t) for t in text]            
