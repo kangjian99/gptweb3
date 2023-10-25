@@ -175,7 +175,20 @@ def get_baidu_content(url):
 
 def get_dchd_content(url):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'zh-CN,zh;q=0.9',
+        'cache-control': 'max-age=0',
+        'cookie': 'tt_web_version=new; is_dev=false; is_boe=false; ttwid=1%7CYy-BK_TKgQyK7pk2pSTbcrZFp6kWOz785xGMG4ci6l4%7C1698209450%7Cc6503d83f157e6b1b335f8581c5a5ce2d70f538b64ba2799696d8d833ecd67d1; tt_webid=7293754007183869449; Hm_lvt_3e79ab9e4da287b5752d8048743b95e6=1698209452; city_name=%E5%8C%97%E4%BA%AC; s_v_web_id=verify_lo5a281l_E0aRrNrz_aGQK_4t5Y_BYwj_AHNJRSqT0Dxy; _gid=GA1.2.353875491.1698209458; Hm_lpvt_3e79ab9e4da287b5752d8048743b95e6=1698211893; _ga=GA1.1.364565764.1686876659; msToken=_DL4R-_UCzRAVBsOK1g_c9nfzA9q0myOuI8Nvoo8yUjIn-LR0J1wirmqIcesgh7M8EnDu7oDnrs_qxEjRfJpwjZYq_KPGczRfWA1_Yo=; _ga_YB3EWSDTGF=GS1.1.1698211871.4.1.1698211981.57.0.0',
+        'referer': url,
+        'sec-ch-ua': '"Chromium";v="118", "Google Chrome";v="118", "Not=A?Brand";v="99"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'same-site',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'}
 
     response = requests.get(url, headers=headers)
     response.encoding = 'utf-8'
