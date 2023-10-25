@@ -159,7 +159,7 @@ def get_baidu_content(url):
     title = soup.find('div', class_='_3tNyU').text
 
     # 提取作者
-    author = soup.find('p', class_='_2gGWi').text
+    author = soup.find('span', class_='_2gGWi').text
 
     # 提取正文
     content_tags = soup.find_all('div', class_='dpu8C _2kCxD')
