@@ -1,5 +1,5 @@
 flask
-Openai
+Openai==0.28.1
 Markdown
 datetime
 Pyodbc
