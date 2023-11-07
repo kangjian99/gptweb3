@@ -212,7 +212,7 @@ def stream():
                 messages = []
                 # time.sleep(5)
             counter += 1
-            model_gpt = model_16k if num_tokens(prompt) > 2500 else model
+            model_gpt = model_4 if 'backup4' in prompt_template[0] else model
             try:
                 for res in send_gpt(model_gpt, prompt, temperature, messages, user_id):
                     if 'content' in res:
