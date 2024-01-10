@@ -13,13 +13,13 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = SESSION_SECRET_KEY # SECRET_KEY是Flask用于对session数据进行加密和签名的一个关键值。如果没有设置将无法使用session
 
 stream_data = {}
-table_name = 'prompts'
+table_name = 'prompts_auto'
 
 def Chat_Completion(model, question, tem, messages, stream):
     try:
         messages.append({"role": "user", "content": question})
         print("generate_text:", messages, "\nmodel:", model)
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
         model= model,
         messages= messages,
         temperature=tem,
@@ -51,16 +51,16 @@ def send_gpt(model, prompt, tem, messages, user_id):
         if chunk:
             # print("Decoded chunk:", chunk)  # 添加这一行以打印解码的块
             try:
-                if "delta" in chunk['choices'][0]:
-                    finish_reason = chunk['choices'][0]['finish_reason']
+                if chunk.choices[0].delta:
+                    finish_reason = chunk.choices[0].finish_reason
                     if finish_reason == "stop":
                         break
-                    if "content" in chunk['choices'][0]["delta"]:
-                        partial_words += chunk['choices'][0]["delta"]["content"]
+                    if chunk.choices[0].delta.content:
+                        partial_words += chunk.choices[0].delta.content
                         # print("Content found:", partial_words)  # 添加这一行以打印找到的内容
                         yield {'content': partial_words}
                     else:
-                        print("No content found in delta:", chunk['choices'][0]["delta"])  # 添加这一行以打印没有内容的 delta
+                        print("No content found in delta:", chunk.choices[0].delta)  # 添加这一行以打印没有内容的 delta
                 else:
                     pass
             except json.JSONDecodeError:
