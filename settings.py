@@ -5,8 +5,8 @@ client = OpenAI(
   api_key = os.environ.get('OPENAI_API_KEY'),
 )
   
-model = 'gpt-3.5-turbo-1106' # or text-davinci-003
-model_4 = 'gpt-4-1106-preview'
+model = 'gpt-3.5-turbo-0125'
+model_4 = 'gpt-4-0125-preview'
 
 SESSION_SECRET_KEY = os.environ.get('SESSION_SECRET_KEY')
 
