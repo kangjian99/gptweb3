@@ -1,0 +1,8 @@
+.env
+初始化sql表格prompts.py
+prompts_auto.txt
+初始化sql表格stats.py
+/__pycache__
+/session_messages
+.DS_Store
+db_process_supabase.py
