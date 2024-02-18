@@ -6,3 +6,6 @@ prompts_auto.txt
 /session_messages
 .DS_Store
 db_process_supabase.py
+*.csv
+prompts2csv.py
+db_process_AzureSQL.py

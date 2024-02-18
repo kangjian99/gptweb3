@@ -1,66 +1,63 @@
-import pyodbc
+#import pyodbc
 import json
 import tiktoken
 from settings import *
-    
+from supabase import create_client, Client
+
+supabase: Client = create_client(DB_URL, DB_KEY)
+
 def authenticate_user(username, password):
-    # 连接到 Azure SQL 数据库，并检查 user_info 表格中是否存在提供的用户名和密码
-    cnxn = pyodbc.connect(f'DRIVER={driver};SERVER={server};DATABASE={database};UID={db_username};PWD={db_password}')
-    cursor = cnxn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM user_info WHERE user_id = ? AND password = ?", (username, password))
-    count = cursor.fetchone()[0]
+    response = supabase.table('userinfo').select('password').eq('username', username).execute()
 
-    # 关闭数据库连接
-    cursor.close()
-    cnxn.close()
+    if 'error' in response:
+        print('Error:', response.error)
+        return False
 
-    # 如果找到匹配的用户名和密码，则返回 True，否则返回 False
-    return count == 1
+    user_data = response.data
+
+    if user_data:
+        stored_password = user_data[0]['password']
+        if stored_password == password:
+            return True
+
+    return False
+    
+def read_table_data(table_name):
+    # 从表中读取数据
+    query = supabase.table(table_name).select("*")
+    response = query.execute()
+
+    # 检查错误
+    if 'error' in response:
+        raise RuntimeError(f"Error reading table {table_name}: {response.text}")
+
+    # 将数据转换为字典
+    prompts_dict = {row["name"]: row["prompt"] for row in response.data}
+
+    return prompts_dict
 
 def insert_db(result, user_id=None, messages=[]):
-    # 连接到数据库
-    cnxn = pyodbc.connect(f'DRIVER={driver};SERVER={server};PORT=1433;DATABASE={database};UID={db_username};PWD={db_password}')
-    
     # 获取要插入的结果数据
     now = result.get('datetime')
     user_id = result.get('user_id')
     cn_char_count = result.get('cn_char_count')
     en_char_count = result.get('en_char_count')
     tokens = result.get('tokens')
-    
-    # 构建插入语句并执行
-    query = "INSERT INTO stats (user_id, datetime, cn_char_count, en_char_count, tokens) VALUES (?, ?, ?, ?, ?);"
-    params = (user_id, now, cn_char_count, en_char_count, tokens)
-    cursor = cnxn.cursor()
-    cursor.execute(query, params)
-    
+
+    # If user_id is provided, insert messages into the table
     if user_id:
         messages_str = json.dumps(messages, ensure_ascii=False)
-        # 构建插入语句并执行
-        query = "INSERT INTO session (user_id, messages) VALUES (?, ?);"
-        params = (user_id, messages_str)
-        cursor = cnxn.cursor()
-        cursor.execute(query, params)
-        
-    cnxn.commit()
-    cnxn.close()
-    
-def read_table_data(table_name):
-    cnxn = pyodbc.connect(f'DRIVER={driver};SERVER={server};PORT=1433;DATABASE={database};UID={db_username};PWD={db_password}')
-    cursor = cnxn.cursor()
+        response = supabase.table('gptweb_stats').insert({
+            'user_id': user_id,
+            'datetime': now,
+            'messages': messages_str,
+            'tokens': tokens
+        }).execute()
 
-    # 从表格中读取数据
-    cursor.execute(f"SELECT * FROM {table_name}")
-    rows = cursor.fetchall()
-
-    # 将数据转换为字典
-    prompts_dict = {row.name.strip('"'): row.prompt.strip('"') for row in rows}
-
-    cursor.close()
-    cnxn.close()
-
-    return prompts_dict
-       
+        # Check for errors in the response
+        if 'error' in response:
+            raise RuntimeError(f"Error inserting into session table: {response['error']}")
+               
 def clear_messages(user_id):
     if not os.path.exists(directory):
         os.mkdir(directory)
